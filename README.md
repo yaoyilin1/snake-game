@@ -129,13 +129,37 @@ git commit -m "初始提交：贪吃蛇游戏项目"
 
 ### 连接到远程仓库
 
+#### 方法1：使用设置脚本（推荐）
+
+**Windows用户：**
+```bash
+# 双击运行 setup_remote.bat 文件
+# 按照提示选择Git托管服务并输入仓库URL
+```
+
+**Linux/Mac用户：**
+```bash
+# 给脚本执行权限并运行
+chmod +x setup_remote.sh
+./setup_remote.sh
+```
+
+#### 方法2：手动设置
+
 ```bash
 # 添加远程仓库（替换为您的仓库URL）
 git remote add origin <您的远程仓库URL>
 
 # 推送到远程仓库
-git push -u origin main
+git push -u origin master
 ```
+
+#### 支持的Git托管服务
+
+- **GitHub**: https://github.com
+- **GitLab**: https://gitlab.com  
+- **Gitee (码云)**: https://gitee.com
+- **自定义URL**: 任何Git服务器
 
 ### 常用Git命令
 
