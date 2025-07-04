@@ -189,9 +189,7 @@ class SnakeGameEngine:
                         pygame.Rect(self.food.pos[0], self.food.pos[1], 10, 10))
         
         # 绘制星星
-        if self.star.pos:
-            pygame.draw.rect(self.game_window, self.colors['yellow'], 
-                           pygame.Rect(self.star.pos[0], self.star.pos[1], 10, 10))
+        self.star.draw(self.game_window)
         
         # 绘制障碍物
         for obs in self.obstacles.obstacles:
