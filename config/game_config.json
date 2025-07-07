@@ -1,0 +1,129 @@
+{
+    "window": {
+        "title": "Snake Eater",
+        "game_width": 720,
+        "game_height": 480,
+        "ui_height": 80,
+        "fps_limit": 60
+    },
+    
+    "snake": {
+        "initial_position": [100, 50],
+        "initial_body": [[100, 50], [90, 50], [80, 50]],
+        "initial_direction": "RIGHT",
+        "cell_size": 10,
+        "color": [0, 255, 0],
+        "head_image": "images/snake_head.png",
+        "body_image": "images/snake_body.png"
+    },
+    
+    "speed": {
+        "levels": [10, 15, 20, 25, 30, 40, 60, 90, 120],
+        "max_level": 9,
+        "speedup_interval": 60000
+    },
+    
+    "food": {
+        "types": [
+            {
+                "name": "small",
+                "color": [255, 255, 255],
+                "length_increase": 4,
+                "probability": 0.6,
+                "image": "images/food_small.png"
+            },
+            {
+                "name": "medium", 
+                "color": [0, 191, 255],
+                "length_increase": 10,
+                "probability": 0.3,
+                "image": "images/food_medium.png"
+            },
+            {
+                "name": "large",
+                "color": [255, 69, 0],
+                "length_increase": 15,
+                "probability": 0.1,
+                "image": "images/food_large.png"
+            }
+        ]
+    },
+    
+    "star": {
+        "spawn_probability": 0.01,
+        "duration": 3000,
+        "color": [255, 215, 0],
+        "image_path": "images/star.png"
+    },
+    
+    "obstacles": {
+        "total_count": 50,
+        "group_count": 10,
+        "color": [0, 0, 255],
+        "image": "images/obstacle.png"
+    },
+    
+    "enemies": {
+        "person_count": 3,
+        "move_interval": 50,
+        "color": [160, 32, 240],
+        "directions": [[10, 0], [-10, 0], [0, 10], [0, -10]],
+        "image": "images/enemy.png"
+    },
+    
+    "gameplay": {
+        "initial_lives": 3,
+        "win_condition_length": 100,
+        "collision_penalty": 1
+    },
+    
+    "ui": {
+        "colors": {
+            "background": [0, 0, 0],
+            "ui_background": [40, 40, 40],
+            "separator": [100, 100, 100],
+            "score_text": [255, 255, 255],
+            "lives_text": [255, 255, 255],
+            "info_text": [255, 255, 255],
+            "message_text": [255, 255, 255],
+            "message_bg": [50, 50, 50],
+            "message_border": [150, 150, 150]
+        },
+        "fonts": {
+            "score_size": 10,
+            "info_size": 10,
+            "message_size": 10,
+            "score_font": "consolas",
+            "message_font": "simhei"
+        },
+        "message_duration": 2000,
+        "images": {
+            "background": "images/ui_background.png",
+            "heart": "images/heart.png",
+            "score_background": "images/score_background.png"
+        }
+    },
+    
+    "controls": {
+        "up_keys": ["UP", "w"],
+        "down_keys": ["DOWN", "s"], 
+        "left_keys": ["LEFT", "a"],
+        "right_keys": ["RIGHT", "d"],
+        "exit_key": "ESCAPE",
+        "refresh_key": "r"
+    },
+    
+    "messages": {
+        "turn_message": "紧急转弯！",
+        "obstacle_refresh": "障碍物刷新啦！",
+        "star_collected": "获得一条新生命！",
+        "caught_by_person": "被小人抓住了！",
+        "food_messages": {
+            "small": "小点心也不错~",
+            "medium": "中号美味，真不错！",
+            "large": "哇！吃到大餐啦！"
+        },
+        "game_over": "YOU DIED",
+        "game_win": "YOU WIN!"
+    }
+} 

@@ -4,6 +4,11 @@
 测试所有模块导入是否正常
 """
 
+# 添加项目根目录到Python路径
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
 def test_imports():
     """测试所有模块的导入"""
     try:

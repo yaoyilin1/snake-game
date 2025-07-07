@@ -275,9 +275,12 @@ class ObstacleGroup:
 class UIManager:
     """UI管理器，负责显示分数、生命、速度、长度、消息等"""
     
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
+    def __init__(self, width, height, game_height):
+        self.width = width                # 总窗口宽度
+        self.height = height             # 总窗口高度
+        self.game_height = game_height   # 游戏区域高度
+        self.ui_area_top = game_height   # UI区域顶部位置
+        self.ui_height = height - game_height  # UI区域高度
         self.message = ''
         self.message_timer = 0
         self.message_duration = 2000
@@ -298,7 +301,8 @@ class UIManager:
         score_surface = score_font.render('Score : ' + str(score), True, (255, 255, 255))
         score_rect = score_surface.get_rect()
         if choice == 1:
-            score_rect.midtop = (int(self.width/10), 15)
+            # 显示在UI区域左上角
+            score_rect.topleft = (10, self.ui_area_top + 10)
         else:
             score_rect.midtop = (int(self.width/2), int(self.height/1.25))
         game_window.blit(score_surface, score_rect)
@@ -309,35 +313,53 @@ class UIManager:
         lives_surface = lives_font.render('Lives : ' + str(lives), True, (255, 0, 0))
         lives_rect = lives_surface.get_rect()
         if choice == 1:
-            lives_rect.midtop = (int(self.width*0.8), 15)
+            # 显示在UI区域右上角
+            lives_rect.topright = (self.width - 10, self.ui_area_top + 10)
         else:
             lives_rect.midtop = (int(self.width/2), int(self.height/1.15))
         game_window.blit(lives_surface, lives_rect)
         
     def show_info(self, game_window, speed_level, snake_length):
         """显示速度和长度信息"""
-        info_font = pygame.font.SysFont('consolas', 20)
-        # 速度等级
-        speed_surface = info_font.render(f'Speed Level: {speed_level}', True, (0, 0, 255))
+        info_font = pygame.font.SysFont('consolas', 16)
+        
+        # 速度等级 - 显示在UI区域左下角
+        speed_surface = info_font.render(f'Speed Level: {speed_level}', True, (0, 255, 255))
         speed_rect = speed_surface.get_rect()
-        speed_rect.topleft = (int(self.width*0.8), 40)
+        speed_rect.bottomleft = (10, self.height - 10)
         game_window.blit(speed_surface, speed_rect)
-        # 蛇长度
-        length_surface = info_font.render(f'Length: {snake_length}', True, (0, 0, 255))
+        
+        # 蛇长度 - 显示在UI区域右下角
+        length_surface = info_font.render(f'Length: {snake_length}', True, (0, 255, 255))
         length_rect = length_surface.get_rect()
-        length_rect.midtop = (int(self.width/2), int(self.height/1.25)+30)
+        length_rect.bottomright = (self.width - 10, self.height - 10)
         game_window.blit(length_surface, length_rect)
         
     def show_message(self, game_window):
-        """显示底部消息"""
+        """显示中央消息"""
         if self.message:
-            msg_font = pygame.font.SysFont('simhei', 24)
-            msg_surface = msg_font.render(self.message, True, (255, 0, 0))
+            msg_font = pygame.font.SysFont('simhei', 20)
+            msg_surface = msg_font.render(self.message, True, (255, 255, 0))
             msg_rect = msg_surface.get_rect()
-            msg_rect.midbottom = (int(self.width/2), self.height-10)
+            # 显示在UI区域中央
+            msg_rect.center = (int(self.width/2), self.ui_area_top + int(self.ui_height/2))
+            
             # 消息框背景
-            pygame.draw.rect(game_window, (30,30,30), (0, self.height-40, self.width, 40))
+            bg_rect = pygame.Rect(msg_rect.left - 10, msg_rect.top - 5, 
+                                msg_rect.width + 20, msg_rect.height + 10)
+            pygame.draw.rect(game_window, (50, 50, 50), bg_rect)
+            pygame.draw.rect(game_window, (150, 150, 150), bg_rect, 2)
             game_window.blit(msg_surface, msg_rect)
+            
+    def draw_ui_background(self, game_window):
+        """绘制UI区域背景"""
+        # 绘制UI区域背景
+        ui_rect = pygame.Rect(0, self.ui_area_top, self.width, self.ui_height)
+        pygame.draw.rect(game_window, (40, 40, 40), ui_rect)
+        
+        # 绘制分隔线
+        pygame.draw.line(game_window, (100, 100, 100), 
+                        (0, self.ui_area_top), (self.width, self.ui_area_top), 2)
 
 class SnakeGameEngine:
     """贪吃蛇游戏主引擎，负责游戏主循环和整体调度"""
@@ -345,8 +367,11 @@ class SnakeGameEngine:
     # 游戏配置常量
     SPEED_LEVELS = [10, 15, 20, 25, 30, 40, 60, 90, 120]  # 9级速度
     MAX_LEVEL = 9  # 最大速度等级
-    FRAME_WIDTH = 720
-    FRAME_HEIGHT = 480
+    GAME_WIDTH = 720    # 游戏活动区域宽度
+    GAME_HEIGHT = 480   # 游戏活动区域高度
+    UI_HEIGHT = 80      # UI区域高度
+    FRAME_WIDTH = GAME_WIDTH    # 总窗口宽度
+    FRAME_HEIGHT = GAME_HEIGHT + UI_HEIGHT  # 总窗口高度（游戏区域+UI区域）
     
     def __init__(self):
         """初始化游戏引擎"""
@@ -373,13 +398,13 @@ class SnakeGameEngine:
             'purple': pygame.Color(160, 32, 240)
         }
         
-        # 游戏组件初始化
+        # 游戏组件初始化（使用游戏区域尺寸）
         self.snake = Snake()
-        self.food = Food(self.FRAME_WIDTH, self.FRAME_HEIGHT)
-        self.star = Star(self.FRAME_WIDTH, self.FRAME_HEIGHT)
-        self.person_manager = PersonManager(self.FRAME_WIDTH, self.FRAME_HEIGHT)
-        self.obstacles = ObstacleGroup(self.FRAME_WIDTH, self.FRAME_HEIGHT)
-        self.ui = UIManager(self.FRAME_WIDTH, self.FRAME_HEIGHT)
+        self.food = Food(self.GAME_WIDTH, self.GAME_HEIGHT)
+        self.star = Star(self.GAME_WIDTH, self.GAME_HEIGHT)
+        self.person_manager = PersonManager(self.GAME_WIDTH, self.GAME_HEIGHT)
+        self.obstacles = ObstacleGroup(self.GAME_WIDTH, self.GAME_HEIGHT)
+        self.ui = UIManager(self.FRAME_WIDTH, self.FRAME_HEIGHT, self.GAME_HEIGHT)
         
         # 游戏状态
         self.score = 0
@@ -471,8 +496,8 @@ class SnakeGameEngine:
             
     def check_collisions(self):
         """检查碰撞"""
-        # 边界碰撞
-        if self.snake.check_boundary_collision(self.FRAME_WIDTH, self.FRAME_HEIGHT):
+        # 边界碰撞（基于游戏区域边界）
+        if self.snake.check_boundary_collision(self.GAME_WIDTH, self.GAME_HEIGHT):
             return 'boundary'
             
         # 自身碰撞
@@ -507,8 +532,11 @@ class SnakeGameEngine:
             
     def draw(self):
         """绘制游戏画面"""
-        # 填充背景
+        # 填充整个窗口背景
         self.game_window.fill(self.colors['black'])
+        
+        # 绘制UI区域背景
+        self.ui.draw_ui_background(self.game_window)
         
         # 绘制蛇
         for pos in self.snake.body:
